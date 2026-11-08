@@ -40,6 +40,8 @@ APP_ORIGIN
 
 Do not upload `SETUP_DATABASE_URL` or an administrator private key to Vercel. Do not prefix secrets with `NEXT_PUBLIC_`. Set `APP_ORIGIN` to the assigned production origin, for example `https://your-project.vercel.app`, without a trailing slash or path. Redeploy after changing environment variables. Preview domains need their own matching origin and should not automatically share production data.
 
+Run `npm run cloud:vercel` to verify the actual runtime TLS configuration against Supabase and generate ignored `.local/vercel.env`. Import this file in Vercel's Environment Variables section. It includes `DATABASE_CA_BASE64`, which transports the dashboard-downloaded public CA certificate as one line; runtime code keeps certificate and hostname verification enabled. It excludes the setup connection and administrator private key. If the production origin is not yet known, `APP_ORIGIN` is omitted: assign the actual HTTPS production origin after the first deployment and redeploy before wallet authentication. Do not share screenshots containing expanded variable values.
+
 ## 5. Validate the hosted workflow
 
 Check that the API can read the bundled Amoy metadata and connect to Supabase. Test wallet authentication, invoice extraction, submission, matching, reservation, financing, receipt verification, reload persistence, owner isolation and release. Each lender wallet needs Amoy test POL and contract authorisation. Adding Amoy in MetaMask alone does not authorise its account. Decide whether to import a prepared test lender locally or explicitly authorise the user's chosen public account before the browser test.

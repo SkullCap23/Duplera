@@ -39,6 +39,7 @@
     "amoy:verify": "tsx scripts/verify-amoy.ts",
     "cloud:prepare": "tsx scripts/prepare-cloud.ts",
     "cloud:setup": "tsx scripts/setup-cloud.ts",
+    "cloud:vercel": "tsx scripts/prepare-vercel.ts",
     "test:deployment": "tsx --test tests/deployment.integration.ts",
     "doctor": "tsx scripts/doctor.ts",
     "literature:fetch": "tsx scripts/fetch-literature.ts",
