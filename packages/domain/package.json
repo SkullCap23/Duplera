@@ -1,1 +1,11 @@
-{"name":"@duplera/domain","version":"0.1.0","private":true,"type":"module","exports":"./src/index.ts"}
+{
+  "name": "@duplera/domain",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": "./src/index.ts",
+  "dependencies": {
+    "ethers": "6.17.0",
+    "zod": "4.6.6"
+  }
+}

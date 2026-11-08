@@ -1,1 +1,33 @@
-{"name":"@duplera/web","version":"0.1.0","private":true,"type":"module","scripts":{"dev":"next dev --webpack","build":"next build --webpack","start":"next start"},"dependencies":{"next":"16.4.4","react":"19.3.1","react-dom":"19.3.1"}}
+{
+  "name": "@duplera/web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev --webpack",
+    "build": "next build --webpack",
+    "start": "next start"
+  },
+  "dependencies": {
+    "next": "16.4.4",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "@duplera/domain": "0.1.0",
+    "@duplera/evidence": "0.1.0",
+    "@duplera/matching": "0.1.0",
+    "ethers": "6.17.0",
+    "pg": "8.16.3",
+    "pdfjs-dist": "6.5.438",
+    "zod": "4.6.6"
+  },
+  "engines": {
+    "node": "22.x"
+  },
+  "devDependencies": {
+    "@types/node": "22.19.3",
+    "@types/pg": "8.15.6",
+    "@types/react": "19.2.3",
+    "@types/react-dom": "19.2.3",
+    "typescript": "5.9.3"
+  }
+}

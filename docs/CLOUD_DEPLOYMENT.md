@@ -24,6 +24,8 @@ Initialise Git and create a private GitHub repository. Review the staged file li
 
 Import the repository, choose Next.js and set root directory to `apps/web`. Enable inclusion of source outside that directory when offered. Use the existing build command (`npm run build`) and framework output defaults. Set the Install Command override to `npm install --include=dev` so TypeScript build dependencies are installed. Root postinstall runs with plain Node.js and copies the PDF worker required by browser extraction; it does not depend on tsx.
 
+Use **Node.js 22.x**. Web and internal workspace packages declare their own dependencies so filtered monorepo installs include the PDF worker and domain/evidence/matching packages. The copy script resolves PDF.js from the web workspace, supporting nested dependency layouts.
+
 Set the following **Production server environment variables** from `.local/cloud.env`:
 
 ```text
