@@ -1,6 +1,6 @@
 # Supabase and Vercel deployment
 
-The live Amoy registry is `0xB276dA7975e136306d2fab600b6Dfe058158F9E5` on chain 80002. Contract deployment is complete. Hosted database and application deployment remain pending until the cloud project connection details are configured.
+The live Amoy registry is `0xB276dA7975e136306d2fab600b6Dfe058158F9E5` on chain 80002. Contract deployment and hosted database setup are complete. On 8 November 2026, both Supabase poolers were verified using TLS 1.3, with the correct registry binding, three lenders and RLS enabled on all 16 application tables. Evidence: `docs/results/cloud-database.json`. Vercel application deployment remains pending.
 
 ## 1. Configure the private local file
 
@@ -12,7 +12,7 @@ Leave `APP_ORIGIN` blank until the final Vercel HTTPS origin is known. Do not re
 
 ## 2. Initialise Supabase
 
-Run `npm run cloud:setup`. The command explicitly reads `.local/cloud.env`, does not fall back to the local database, checks the Amoy signer and configuration, and applies the schema, database binding, synthetic lender directory and row-level security in one transaction. It refuses to rebind an existing database to different registry secrets.
+Download the database CA certificate from your Supabase project's Database Settings > SSL Configuration and save it as `.local/supabase-ca.crt`. Run `npm run cloud:setup`. The command explicitly reads `.local/cloud.env`, uses this certificate with hostname verification, does not fall back to the local database, checks the Amoy signer and configuration, and applies the schema, database binding, synthetic lender directory and row-level security in one transaction. It refuses to rebind an existing database to different registry secrets.
 
 Use a dedicated Supabase project. The server uses a privileged PostgreSQL connection and enforces wallet ownership; browser Supabase Data API access is not used. No browser RLS policies are created by this setup.
 

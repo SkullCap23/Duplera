@@ -1,4 +1,5 @@
 import {readFile} from 'node:fs/promises';
+import {resolve} from 'node:path';
 import {createHash} from 'node:crypto';
 import {Pool} from 'pg';
 import {Wallet,getAddress} from 'ethers';
@@ -16,7 +17,11 @@ if(!env.REGISTRY_SECRET||env.REGISTRY_SECRET.length<64||!env.ANALYSIS_PRIVATE_KE
 const signer=new Wallet(env.ANALYSIS_PRIVATE_KEY).address.toLowerCase();
 if(signer!==deployment.analysisSigner.toLowerCase())throw new Error('Analysis signer differs from deployed contract');
 const fingerprint=createHash('sha256').update(env.REGISTRY_SECRET).digest('hex');
-const pool=new Pool({connectionString:env.SETUP_DATABASE_URL,max:1,connectionTimeoutMillis:10000});
+// Use the CA downloaded from this project's Supabase dashboard; retain hostname verification.
+const caPath=resolve('.local/supabase-ca.crt');
+await readFile(caPath,'utf8');
+url.searchParams.set('sslrootcert',caPath);
+const pool=new Pool({connectionString:url.href,max:1,connectionTimeoutMillis:10000});
 try {
  const client=await pool.connect();
  try {

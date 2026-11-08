@@ -1,0 +1,31 @@
+{
+  "checkedAt": "2026-11-08T17:09:12.328Z",
+  "connections": [
+    {
+      "mode": "session",
+      "binding": {
+        "chain_id": "80002",
+        "registry": "0xb276da7975e136306d2fab600b6dfe058158f9e5"
+      },
+      "lenders": 3,
+      "tablesWithRLS": 16,
+      "tls": {
+        "ssl": true,
+        "version": "TLSv1.3"
+      }
+    },
+    {
+      "mode": "transaction",
+      "binding": {
+        "chain_id": "80002",
+        "registry": "0xb276da7975e136306d2fab600b6dfe058158f9e5"
+      },
+      "lenders": 3,
+      "tablesWithRLS": 16,
+      "tls": {
+        "ssl": true,
+        "version": "TLSv1.3"
+      }
+    }
+  ]
+}
