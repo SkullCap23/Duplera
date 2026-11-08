@@ -8,6 +8,7 @@ import {buildEvidence,disclose,storedEvidenceMatches} from "@duplera/evidence";
 import {db,hash,randomHex,chain,actor,lender,signer,HttpError,owned,originCheck,jsonBody,address,deployment,endSession,rateLimit,assertDatabaseScope} from "../../../lib/server";
 import {registerTransaction,reconcileTransaction} from "../../../lib/transactions";
 import {receiptSchema,verifyChainReceipt} from '../../../../../packages/evidence/src/chain';
+import {reservationReference} from '../../../../../packages/evidence/src/reservation';
 export const runtime="nodejs";
 export const dynamic="force-dynamic";
 type Context={params:Promise<{path:string[]}>};
@@ -130,10 +131,11 @@ async function handle(req:Request,ctx:Context){try{
       const {registry,provider,d}=await chain(),c=await registry.getClaim(claimId);
       if(address(c.lender)!==wallet || c.evidenceRoot!==s.evidence.root || c.evidenceContext!==s.evidence.context) throw new HttpError(409,"Claim does not bind this submission");
       const block=await provider.getBlock("latest");
-      const events=await registry.queryFilter(registry.filters.ClaimReserved(claimId),d.blockNumber,"latest");
-      if(events.length!==1) throw new Error("Reservation inclusion could not be established");
-      const event=events[0];
-      return NextResponse.json({chainId:d.chainId,contractAddress:d.address,claimId,schemaVersion:1,evidenceContext:c.evidenceContext,root:c.evidenceRoot,transactionHash:event.transactionHash,blockReference:{number:event.blockNumber,hash:event.blockHash},observedBlock:{number:block?.number,hash:block?.hash},disclosures:disclose(s.evidence.tree,paths)});
+      const saved=await db.query("SELECT tx_hash FROM wallet_transactions WHERE chain_id=$1 AND registry=$2 AND owner=$3 AND submission_id=$4 AND action='reserve' AND claim_id=$5",[d.chainId,address(d.address),wallet,id,claimId]);
+      const event=await reservationReference(provider,registry,claimId,d.blockNumber,saved.rows.map(row=>row.tx_hash));
+      const receipt={chainId:d.chainId,contractAddress:d.address,claimId,schemaVersion:1,evidenceContext:c.evidenceContext,root:c.evidenceRoot,transactionHash:event.transactionHash,blockReference:{number:event.blockNumber,hash:event.blockHash},observedBlock:{number:block?.number,hash:block?.hash},disclosures:disclose(s.evidence.tree,paths)};
+      if(!(await verifyChainReceipt(provider,d,receipt)).valid)throw new HttpError(409,'Reservation evidence is not canonically confirmed. Refresh history and retry.');
+      return NextResponse.json(receipt);
     }
   }
   if(path[0]==="analyses" && path[2]==="review" && req.method==="POST"){

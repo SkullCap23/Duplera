@@ -50,6 +50,10 @@ Check that the API can read the bundled Amoy metadata and connect to Supabase. T
 
 Do not mark hosting complete until these checks pass on the public deployment. Source/explorer verification of a contract is distinct from application deployment and bytecode/receipt checks.
 
+### Public RPC history limits
+
+The dRPC free endpoint rejects `eth_getLogs` requests spanning more than 10,000 blocks. Disclosure export therefore retrieves the reservation receipt from the owner's saved transaction history first, and falls back to reverse searches in ranges of at most 2,000 blocks. Export checks canonical inclusion and the selected Merkle proofs before returning the package. The previous deployment-to-latest query failed after the chain advanced beyond the provider's range limit. Claim #1's three-field package was verified against live Supabase evidence and Amoy following this fix.
+
 ## References
 
 - [Supabase database connections](https://supabase.com/docs/guides/database/connecting-to-postgres)
