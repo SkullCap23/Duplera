@@ -1,0 +1,25 @@
+{
+  "generatedAt": "2026-11-03T17:06:19.127Z",
+  "chainId": 31337,
+  "samples": 20,
+  "node": "v22.16.0",
+  "platform": "win32",
+  "scope": "Local auto-mined EVM JSON-RPC submission to inclusion; includes gas estimation and local RPC; excludes login, PDF analysis and public-network consensus",
+  "operations": {
+    "reserve": {
+      "medianMs": 77.26510000000053,
+      "p95Ms": 105.98939999999993,
+      "medianGas": 223968
+    },
+    "confirm": {
+      "medianMs": 77.85270000000014,
+      "p95Ms": 89.11929999999938,
+      "medianGas": 33042
+    },
+    "release": {
+      "medianMs": 78.48089999999956,
+      "p95Ms": 93.67440000000079,
+      "medianGas": 30213
+    }
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "verifiedAt": "2026-11-08T14:06:00.926Z",
+  "chainId": 80002,
+  "address": "0xB276dA7975e136306d2fab600b6Dfe058158F9E5",
+  "runtimeCodeHash": "0xd1feedbdcdd47f848db9e146c8be814dc78754a514dc055eecd63c559a1feb15",
+  "admin": "0xfd26D0628a1ebb8B992f12257FF92BbfC21B116f",
+  "analysisSigner": "0x274a0B6d9787333cCA485C050D663f14A994DE35",
+  "lenders": [
+    {
+      "address": "0xC65cC7E009A01391B6a326Ec26E2819D91782659",
+      "authorised": true
+    },
+    {
+      "address": "0x7779F59C1F64fb9288b1587851513559a8A6eb9A",
+      "authorised": true
+    },
+    {
+      "address": "0x367E317d5606e8B3EB5C135a244136267C9C92ca",
+      "authorised": true
+    }
+  ],
+  "transactions": [
+    {
+      "hash": "0x45b5263836485b67e1e1a359f60aac17abc09e7ba44bf381542929c015420d08",
+      "blockNumber": 52324037,
+      "blockHash": "0x82a11848e60977948e5bd5021f0d71ae9d9c36960449c92089cf58bd4d276963",
+      "confirmations": 101,
+      "feePOL": "0.047075310100427328"
+    },
+    {
+      "hash": "0x9040880d14f78c3ee10d222812638da83ff7189897e222b21e3f017021e18d23",
+      "blockNumber": 52324052,
+      "blockHash": "0x3b670895be20c8f19f1bd9c9fb114a36934846553655a4238a632d7d14c956dd",
+      "confirmations": 87,
+      "feePOL": "0.00166830000350343"
+    },
+    {
+      "hash": "0x462e5ad5930ec2904669ba03b2fb51af9dce026f27941340688ebfd8b535a576",
+      "blockNumber": 52324063,
+      "blockHash": "0x6fc2946fe7e32793d45ef4b031109be569a557a411802175b2b08580535f9c5b",
+      "confirmations": 77,
+      "feePOL": "0.00166830000350343"
+    },
+    {
+      "hash": "0x076588a546e24cb105583d3cde32229e273539a96cde72a296ed4d4c3668e1a6",
+      "blockNumber": 52324074,
+      "blockHash": "0xc96a8b6ebd74f2f903408892646c41511ca8f77bffc0255dcd1c93c8c6c9c060",
+      "confirmations": 67,
+      "feePOL": "0.00166830000350343"
+    }
+  ],
+  "remainingAdminBalancePOL": "0.947919789889062382"
+}

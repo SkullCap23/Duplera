@@ -1,0 +1,256 @@
+{
+  "generatedAt": "2026-11-03T17:10:10.402Z",
+  "ruleset": "structured-v1",
+  "threshold": 0.78,
+  "scope": "Synthetic family-held-out PDFs; thresholds fixed in source before evaluation",
+  "families": 100,
+  "candidateRecall": 0.875,
+  "methods": {
+    "raw": {
+      "tp": 100,
+      "fn": 700,
+      "fp": 0,
+      "tn": 1045,
+      "precision": 1,
+      "recall": 0.125,
+      "falsePositiveRate": 0
+    },
+    "identity": {
+      "tp": 500,
+      "fn": 300,
+      "fp": 0,
+      "tn": 1045,
+      "precision": 1,
+      "recall": 0.625,
+      "falsePositiveRate": 0
+    },
+    "structured": {
+      "tp": 700,
+      "fn": 100,
+      "fp": 102,
+      "tn": 943,
+      "precision": 0.8728179551122195,
+      "recall": 0.875,
+      "falsePositiveRate": 0.09760765550239234
+    }
+  },
+  "byMutation": {
+    "exact": {
+      "raw": {
+        "tp": 100,
+        "fn": 0,
+        "fp": 0,
+        "tn": 0
+      },
+      "identity": {
+        "tp": 100,
+        "fn": 0,
+        "fp": 0,
+        "tn": 0
+      },
+      "structured": {
+        "tp": 100,
+        "fn": 0,
+        "fp": 0,
+        "tn": 0
+      }
+    },
+    "layout": {
+      "raw": {
+        "tp": 0,
+        "fn": 100,
+        "fp": 0,
+        "tn": 0
+      },
+      "identity": {
+        "tp": 100,
+        "fn": 0,
+        "fp": 0,
+        "tn": 0
+      },
+      "structured": {
+        "tp": 100,
+        "fn": 0,
+        "fp": 0,
+        "tn": 0
+      }
+    },
+    "amount": {
+      "raw": {
+        "tp": 0,
+        "fn": 100,
+        "fp": 0,
+        "tn": 0
+      },
+      "identity": {
+        "tp": 100,
+        "fn": 0,
+        "fp": 0,
+        "tn": 0
+      },
+      "structured": {
+        "tp": 100,
+        "fn": 0,
+        "fp": 0,
+        "tn": 0
+      }
+    },
+    "date": {
+      "raw": {
+        "tp": 0,
+        "fn": 100,
+        "fp": 0,
+        "tn": 0
+      },
+      "identity": {
+        "tp": 100,
+        "fn": 0,
+        "fp": 0,
+        "tn": 0
+      },
+      "structured": {
+        "tp": 100,
+        "fn": 0,
+        "fp": 0,
+        "tn": 0
+      }
+    },
+    "amendment": {
+      "raw": {
+        "tp": 0,
+        "fn": 100,
+        "fp": 0,
+        "tn": 0
+      },
+      "identity": {
+        "tp": 100,
+        "fn": 0,
+        "fp": 0,
+        "tn": 0
+      },
+      "structured": {
+        "tp": 100,
+        "fn": 0,
+        "fp": 0,
+        "tn": 0
+      }
+    },
+    "recurring": {
+      "raw": {
+        "tp": 0,
+        "fn": 0,
+        "fp": 0,
+        "tn": 100
+      },
+      "identity": {
+        "tp": 0,
+        "fn": 0,
+        "fp": 0,
+        "tn": 100
+      },
+      "structured": {
+        "tp": 0,
+        "fn": 0,
+        "fp": 100,
+        "tn": 0
+      }
+    },
+    "number": {
+      "raw": {
+        "tp": 0,
+        "fn": 100,
+        "fp": 0,
+        "tn": 0
+      },
+      "identity": {
+        "tp": 0,
+        "fn": 100,
+        "fp": 0,
+        "tn": 0
+      },
+      "structured": {
+        "tp": 100,
+        "fn": 0,
+        "fp": 0,
+        "tn": 0
+      }
+    },
+    "supplier": {
+      "raw": {
+        "tp": 0,
+        "fn": 100,
+        "fp": 0,
+        "tn": 0
+      },
+      "identity": {
+        "tp": 0,
+        "fn": 100,
+        "fp": 0,
+        "tn": 0
+      },
+      "structured": {
+        "tp": 100,
+        "fn": 0,
+        "fp": 0,
+        "tn": 0
+      }
+    },
+    "multi": {
+      "raw": {
+        "tp": 0,
+        "fn": 100,
+        "fp": 0,
+        "tn": 0
+      },
+      "identity": {
+        "tp": 0,
+        "fn": 100,
+        "fp": 0,
+        "tn": 0
+      },
+      "structured": {
+        "tp": 0,
+        "fn": 100,
+        "fp": 0,
+        "tn": 0
+      }
+    },
+    "distinct": {
+      "raw": {
+        "tp": 0,
+        "fn": 0,
+        "fp": 0,
+        "tn": 945
+      },
+      "identity": {
+        "tp": 0,
+        "fn": 0,
+        "fp": 0,
+        "tn": 945
+      },
+      "structured": {
+        "tp": 0,
+        "fn": 0,
+        "fp": 2,
+        "tn": 943
+      }
+    }
+  },
+  "extractionMs": {
+    "median": 4.295700000000579,
+    "p95": 7.155700000000252
+  },
+  "hardware": {
+    "platform": "win32",
+    "arch": "x64",
+    "node": "v22.16.0"
+  },
+  "limitations": [
+    "Synthetic data; no real fraud or bank-grade accuracy claims",
+    "Negative-pair sampling is deterministic and incomplete",
+    "No OCR; labelled text layouts only"
+  ],
+  "split": "held-out",
+  "pdfsExtracted": 900,
+  "rulesetSha256": "f0378b23916c0d2012ea08016e4170ef737256f7fa9db51f42ffa04fd9aa56dc"
+}

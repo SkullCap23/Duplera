@@ -1,0 +1,21 @@
+{
+  "generatedAt": "2026-11-03T17:00:31.392Z",
+  "samples": 50,
+  "platform": "win32",
+  "node": "v22.16.0",
+  "measurement": "Local PostgreSQL adapter elapsed time, includes signature verification and receipt signing for reserve; excludes login/network consensus",
+  "operations": {
+    "reserve": {
+      "medianMs": 24.353000000000065,
+      "p95Ms": 30.48889999999983
+    },
+    "confirm": {
+      "medianMs": 5.443899999999758,
+      "p95Ms": 6.471300000000156
+    },
+    "release": {
+      "medianMs": 4.461900000000242,
+      "p95Ms": 5.956199999999626
+    }
+  }
+}

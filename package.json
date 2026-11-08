@@ -1,0 +1,80 @@
+{
+  "name": "duplera",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=22.16.0"
+  },
+  "scripts": {
+    "dev": "npm run dev --workspace @duplera/web",
+    "build": "npm run build --workspace @duplera/web",
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test tests/*.test.ts",
+    "chain": "hardhat node",
+    "compile": "tsx scripts/compile.ts",
+    "deploy:local": "tsx scripts/deploy.ts",
+    "test:contracts": "tsx --test tests/registry.integration.ts",
+    "db:setup": "tsx scripts/db-setup.ts",
+    "seed": "tsx scripts/generate.ts",
+    "postinstall": "tsx scripts/copy-worker.ts",
+    "evaluate": "tsx scripts/evaluate.ts",
+    "replay": "tsx scripts/replay.ts",
+    "db:local": "tsx scripts/postgres.ts",
+    "test:e2e": "playwright test",
+    "test:baseline": "tsx --test tests/baseline.integration.ts",
+    "test:projection": "tsx --test tests/projection.integration.ts",
+    "benchmark:baseline": "tsx scripts/benchmark-baseline.ts",
+    "deploy:amoy": "tsx scripts/deploy-amoy.ts",
+    "verify:receipt": "tsx scripts/verify-receipt.ts",
+    "data:comtrade": "tsx scripts/cache-comtrade.ts",
+    "benchmark:contracts": "tsx scripts/benchmark-contract.ts",
+    "report:results": "tsx scripts/report-results.ts",
+    "amoy:prepare": "tsx scripts/prepare-amoy.ts",
+    "amoy:check": "tsx scripts/deploy-amoy.ts --check",
+    "amoy:verify": "tsx scripts/verify-amoy.ts",
+    "cloud:prepare": "tsx scripts/prepare-cloud.ts",
+    "cloud:setup": "tsx scripts/setup-cloud.ts",
+    "test:deployment": "tsx --test tests/deployment.integration.ts",
+    "doctor": "tsx scripts/doctor.ts",
+    "literature:fetch": "tsx scripts/fetch-literature.ts",
+    "validate": "tsx scripts/validate.ts",
+    "demo:capture": "tsx scripts/capture-demo.ts",
+    "demo:narrate": "powershell.exe -NoProfile -File scripts/narrate-demo.ps1",
+    "demo:render": "tsx scripts/render-demo.ts && tsx scripts/demo-transcript.ts"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "5.4.0",
+    "@openzeppelin/merkle-tree": "1.0.8",
+    "ethers": "6.17.0",
+    "next": "16.4.4",
+    "pdf-lib": "1.17.1",
+    "pdfjs-dist": "6.5.438",
+    "pg": "8.16.3",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "zod": "4.6.6"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.64.1",
+    "@types/node": "22.19.3",
+    "@types/pg": "8.15.6",
+    "@types/react": "19.2.7",
+    "@types/react-dom": "19.2.3",
+    "embedded-postgres": "17.11.0-beta.19",
+    "hardhat": "3.21.2",
+    "solc": "0.8.38",
+    "tsx": "4.23.15",
+    "typescript": "5.9.3"
+  },
+  "overrides": {
+    "zod": "4.6.6",
+    "uuid": "11.1.1",
+    "ws": "8.21.0",
+    "tmp": "0.2.7"
+  }
+}

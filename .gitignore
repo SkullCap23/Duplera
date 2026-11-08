@@ -1,0 +1,16 @@
+node_modules/
+.next/
+.next-dev/
+.env*
+!.env.example
+artifacts/
+cache/
+deployments/local.json
+deployments/amoy-pending.json
+data/synthetic/*.pdf
+data/synthetic/manifest.json
+*.tsbuildinfo
+apps/web/public/pdf.worker.min.mjs
+.local/
+test-results/
+playwright-report/

@@ -1,0 +1,5 @@
+import {mkdir,writeFile} from 'node:fs/promises';
+const sources=[{id:'blockchain-decision',url:'https://eprint.iacr.org/2017/375.pdf'},{id:'invoice-financing',url:'https://www.research.unipd.it/bitstream/11577/3329121/1/Blockchain_IEEE_journal.pdf'},{id:'record-linkage',url:'https://users.cecs.anu.edu.au/~christen/publications/christen2011indexing.pdf'}];
+await mkdir('.local/literature',{recursive:true});
+const results=await Promise.all(sources.map(async s=>{try{const response=await fetch(s.url,{signal:AbortSignal.timeout(20000)});if(!response.ok)throw new Error('HTTP '+response.status);const bytes=new Uint8Array(await response.arrayBuffer());if(Buffer.from(bytes.subarray(0,5)).toString()!=='%PDF-')throw new Error('Not a PDF response');await writeFile('.local/literature/'+s.id+'.pdf',bytes);return {...s,status:'downloaded',retrievedAt:new Date().toISOString()};}catch(e){return {...s,status:'unavailable',reason:e instanceof Error?e.message:String(e)};}}));
+await writeFile('.local/literature/sources.json',JSON.stringify(results,null,2));console.log(results);

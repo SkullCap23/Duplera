@@ -1,0 +1,37 @@
+{
+  "source": "UN Comtrade",
+  "attribution": "Source: UN Comtrade",
+  "retrievedAt": "2026-11-03T17:04:59.110Z",
+  "url": "https://comtradeapi.un.org/public/v1/preview/C/A/HS?period=2023&reporterCode=699&cmdCode=5208&flowCode=X&partnerCode=842&partner2Code=0&customsCode=C00&motCode=0&maxRecords=5&includeDesc=true",
+  "parameters": {
+    "period": "2023",
+    "reporterCode": "699",
+    "cmdCode": "5208",
+    "flowCode": "X",
+    "partnerCode": "842",
+    "partner2Code": "0",
+    "customsCode": "C00",
+    "motCode": "0",
+    "maxRecords": "5",
+    "includeDesc": "true"
+  },
+  "typeCode": "C",
+  "frequency": "A",
+  "classificationRequested": "HS",
+  "policy": "https://uncomtrade.org/docs/re-dissemination-of-data/",
+  "purpose": "Small non-commercial course demonstration; aggregate context only, never invoice or fraud ground truth",
+  "transformation": "Keep reporter, partner, commodity and classification metadata; do not infer invoice prices, counterparties or fraud labels",
+  "routes": [
+    {
+      "id": 0,
+      "period": "2023",
+      "reporterCode": 699,
+      "reporter": "India",
+      "partnerCode": 842,
+      "partner": "USA",
+      "commodityCode": "5208",
+      "commodity": "Woven fabrics of cotton, containing 85% or more by weight of cotton, weighing not more than 200 g/m2",
+      "classification": "H6"
+    }
+  ]
+}

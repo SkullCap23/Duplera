@@ -1,0 +1,61 @@
+{
+  "checkedAt": "2026-11-03T17:40:22.605Z",
+  "complete": true,
+  "checks": [
+    {
+      "command": "npm run doctor",
+      "exitCode": 0,
+      "elapsedMs": 2930
+    },
+    {
+      "command": "npm run compile",
+      "exitCode": 0,
+      "elapsedMs": 2960
+    },
+    {
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "elapsedMs": 7815
+    },
+    {
+      "command": "npm run test",
+      "exitCode": 0,
+      "elapsedMs": 1893
+    },
+    {
+      "command": "npm run test:contracts",
+      "exitCode": 0,
+      "elapsedMs": 4536
+    },
+    {
+      "command": "npm run test:baseline",
+      "exitCode": 0,
+      "elapsedMs": 2214
+    },
+    {
+      "command": "npm run test:deployment",
+      "exitCode": 0,
+      "elapsedMs": 3162
+    },
+    {
+      "command": "npm run test:projection",
+      "exitCode": 0,
+      "elapsedMs": 2543
+    },
+    {
+      "command": "npm run build",
+      "exitCode": 0,
+      "elapsedMs": 28481
+    },
+    {
+      "command": "npm run test:e2e",
+      "exitCode": 0,
+      "elapsedMs": 24008
+    },
+    {
+      "command": "npm run verify:receipt",
+      "exitCode": 0,
+      "elapsedMs": 1742
+    }
+  ]
+}
