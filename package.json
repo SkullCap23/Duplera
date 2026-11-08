@@ -21,7 +21,7 @@
     "test:contracts": "tsx --test tests/registry.integration.ts",
     "db:setup": "tsx scripts/db-setup.ts",
     "seed": "tsx scripts/generate.ts",
-    "postinstall": "tsx scripts/copy-worker.ts",
+    "postinstall": "node scripts/copy-worker.mjs",
     "evaluate": "tsx scripts/evaluate.ts",
     "replay": "tsx scripts/replay.ts",
     "db:local": "tsx scripts/postgres.ts",

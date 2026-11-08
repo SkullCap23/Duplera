@@ -22,7 +22,7 @@ Initialise Git and create a private GitHub repository. Review the staged file li
 
 ## 4. Import into Vercel
 
-Import the repository, choose Next.js and set root directory to `apps/web`. Enable inclusion of source outside that directory when offered. Use the existing build command (`npm run build`) and framework output defaults. Install the full npm workspace, including development dependencies required by the root postinstall/build tooling. Root postinstall copies the PDF worker required by browser extraction.
+Import the repository, choose Next.js and set root directory to `apps/web`. Enable inclusion of source outside that directory when offered. Use the existing build command (`npm run build`) and framework output defaults. Set the Install Command override to `npm install --include=dev` so TypeScript build dependencies are installed. Root postinstall runs with plain Node.js and copies the PDF worker required by browser extraction; it does not depend on tsx.
 
 Set the following **Production server environment variables** from `.local/cloud.env`:
 
