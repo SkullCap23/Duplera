@@ -54,6 +54,8 @@ Do not mark hosting complete until these checks pass on the public deployment. S
 
 The dRPC free endpoint rejects `eth_getLogs` requests spanning more than 10,000 blocks. Disclosure export therefore retrieves the reservation receipt from the owner's saved transaction history first, and falls back to reverse searches in ranges of at most 2,000 blocks. Export checks canonical inclusion and the selected Merkle proofs before returning the package. The previous deployment-to-latest query failed after the chain advanced beyond the provider's range limit. Claim #1's three-field package was verified against live Supabase evidence and Amoy following this fix.
 
+The same endpoint also rejects JSON-RPC batches of more than three requests. Ethers can add a network check to parallel verifier reads, crossing this limit. The web server uses `batchMaxCount: 1` so each supported read is submitted separately. Reproduction confirmed that the default batch failed with RPC error 31 while identical individual calls succeeded.
+
 ## References
 
 - [Supabase database connections](https://supabase.com/docs/guides/database/connecting-to-postgres)
