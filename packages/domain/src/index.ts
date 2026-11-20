@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { createHmac } from "node:crypto";
+import {canonicalLineItems} from './line-items';
 
 export const SCHEMA_VERSION = 1;
 const text = z.string().trim().min(1).max(160);
@@ -9,12 +10,13 @@ export const invoiceSchema = z.object({
   invoiceNumberNamespace: text, invoiceNumber: text,
   invoiceDate: z.iso.date(), currency: z.string().regex(/^[A-Za-z]{3}$/),
   amountMinor: z.string().regex(/^[1-9]\d{0,17}$/), description: z.string().trim().min(1).max(2000),
+  lineItemsJson:z.string().min(2).max(12000).optional().superRefine((value,ctx)=>{if(value)try{canonicalLineItems(value)}catch{ctx.addIssue({code:'custom',message:'Invalid structured line items'})}}),
 });
 export type Invoice = z.infer<typeof invoiceSchema>;
 export const normalise = (s: string) => s.normalize("NFKC").trim().replace(/\s+/gu, " ").toUpperCase();
 export function canonicalise(input: unknown): Invoice {
   const v = invoiceSchema.parse(input);
-  return Object.fromEntries(Object.entries(v).map(([k, value]) => [k, normalise(value)])) as Invoice;
+  return Object.fromEntries(Object.entries(v).filter(([,value])=>value!==undefined).map(([k, value]) => [k, k==='lineItemsJson'?canonicalLineItems(value!):normalise(value!)])) as Invoice;
 }
 export function identity(input: unknown): string {
   const v = canonicalise(input);

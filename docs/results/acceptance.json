@@ -1,61 +1,71 @@
 {
-  "checkedAt": "2026-11-03T17:40:22.605Z",
+  "checkedAt": "2026-11-20T17:53:08.946Z",
   "complete": true,
   "checks": [
     {
       "command": "npm run doctor",
       "exitCode": 0,
-      "elapsedMs": 2930
+      "elapsedMs": 1297
     },
     {
       "command": "npm run compile",
       "exitCode": 0,
-      "elapsedMs": 2960
+      "elapsedMs": 2079
     },
     {
       "command": "npm run typecheck",
       "exitCode": 0,
-      "elapsedMs": 7815
+      "elapsedMs": 3858
     },
     {
       "command": "npm run test",
       "exitCode": 0,
-      "elapsedMs": 1893
+      "elapsedMs": 1618
     },
     {
       "command": "npm run test:contracts",
       "exitCode": 0,
-      "elapsedMs": 4536
+      "elapsedMs": 4016
     },
     {
       "command": "npm run test:baseline",
       "exitCode": 0,
-      "elapsedMs": 2214
+      "elapsedMs": 1429
+    },
+    {
+      "command": "npm run test:candidates",
+      "exitCode": 0,
+      "elapsedMs": 1776
     },
     {
       "command": "npm run test:deployment",
       "exitCode": 0,
-      "elapsedMs": 3162
+      "elapsedMs": 2903
     },
     {
       "command": "npm run test:projection",
       "exitCode": 0,
-      "elapsedMs": 2543
+      "elapsedMs": 2786
     },
     {
       "command": "npm run build",
       "exitCode": 0,
-      "elapsedMs": 28481
+      "elapsedMs": 35426
     },
     {
       "command": "npm run test:e2e",
       "exitCode": 0,
-      "elapsedMs": 24008
+      "elapsedMs": 35683
+    },
+    {
+      "command": "npm run test:outages",
+      "exitCode": 0,
+      "elapsedMs": 2636
     },
     {
       "command": "npm run verify:receipt",
       "exitCode": 0,
-      "elapsedMs": 1742
+      "elapsedMs": 1755
     }
   ]
 }

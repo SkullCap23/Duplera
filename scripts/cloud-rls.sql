@@ -3,7 +3,7 @@
 DO $$
 DECLARE table_name text;
 BEGIN
- FOREACH table_name IN ARRAY ARRAY['challenges','sessions','submissions','analyses','attestations','chain_events','baseline_claims','baseline_audit','attestation_requests','wallet_transactions','baseline_members','baseline_nonces','api_limits','projection_cursors','registry_configuration','institutions']
+ FOREACH table_name IN ARRAY ARRAY['challenges','sessions','submissions','analyses','attestations','chain_events','baseline_claims','baseline_audit','attestation_requests','wallet_transactions','baseline_members','baseline_nonces','api_limits','projection_cursors','registry_configuration','institutions','suppliers','invoice_versions','access_tokens','tool_audit','investigations']
  LOOP
   EXECUTE format('ALTER TABLE public.%I ENABLE ROW LEVEL SECURITY',table_name);
  END LOOP;

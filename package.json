@@ -11,6 +11,9 @@
     "node": "22.x"
   },
   "scripts": {
+    "local:start": "tsx scripts/local-start.ts",
+    "local:stop": "powershell.exe -NoProfile -File scripts/local-stop.ps1",
+    "licenses:audit": "tsx scripts/license-audit.ts",
     "dev": "npm run dev --workspace @duplera/web",
     "build": "npm run build --workspace @duplera/web",
     "typecheck": "tsc --noEmit",
@@ -27,6 +30,8 @@
     "db:local": "tsx scripts/postgres.ts",
     "test:e2e": "playwright test",
     "test:baseline": "tsx --test tests/baseline.integration.ts",
+    "test:candidates":"tsx --test tests/candidates.integration.ts",
+    "test:outages":"tsx scripts/outage-check.ts",
     "test:projection": "tsx --test tests/projection.integration.ts",
     "benchmark:baseline": "tsx scripts/benchmark-baseline.ts",
     "deploy:amoy": "tsx scripts/deploy-amoy.ts",
@@ -52,7 +57,7 @@
     "@openzeppelin/contracts": "5.4.0",
     "@openzeppelin/merkle-tree": "1.0.8",
     "ethers": "6.17.0",
-    "next": "16.4.4",
+    "next": "16.4.6",
     "pdf-lib": "1.17.1",
     "pdfjs-dist": "6.5.438",
     "pg": "8.16.3",

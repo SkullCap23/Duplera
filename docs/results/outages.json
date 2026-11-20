@@ -1,0 +1,16 @@
+{
+  "checkedAt": "2026-11-20T17:53:07.110Z",
+  "method": "Separate production app process with unreachable database and RPC; metadata stays available, private login and evidence verification fail closed",
+  "results": [
+    {
+      "operation": "auth/challenge",
+      "status": 503,
+      "accepted": false
+    },
+    {
+      "operation": "verify",
+      "status": 503,
+      "accepted": false
+    }
+  ]
+}

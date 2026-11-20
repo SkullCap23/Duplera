@@ -9,15 +9,33 @@ import {db,hash,randomHex,chain,actor,lender,signer,HttpError,owned,originCheck,
 import {registerTransaction,reconcileTransaction} from "../../../lib/transactions";
 import {receiptSchema,verifyChainReceipt} from '../../../../../packages/evidence/src/chain';
 import {reservationReference} from '../../../../../packages/evidence/src/reservation';
+import {retrieveCandidates} from '../../../../../packages/domain/src/candidates';
+import {authorizeSupplier,registerVersion,checkedIssuance,lineage,historicalIssuanceToken} from '../../../lib/issuance';
+import {versionSchema,versionPayload,issueTypes,supplierTypes,issuanceDomain} from '../../../../../packages/domain/src/issuance';
+import {investigate} from '../../../lib/investigator';
+import {rpcMetrics} from '../../../lib/rpc-metrics';
 export const runtime="nodejs";
 export const dynamic="force-dynamic";
+export const maxDuration=240;
 type Context={params:Promise<{path:string[]}>};
-export async function GET(req:Request,ctx:Context){return handle(req,ctx)}
-export async function POST(req:Request,ctx:Context){return handle(req,ctx)}
+async function measured(req:Request,ctx:Context){const started=performance.now(),metrics={calls:0,methods:{}};const response=await rpcMetrics.run(metrics,()=>handle(req,ctx));response.headers.set('Server-Timing','application;dur='+(performance.now()-started).toFixed(2)+', rpc;desc="'+metrics.calls+' calls"');response.headers.set('X-Duplera-RPC-Calls',String(metrics.calls));return response;}
+export async function GET(req:Request,ctx:Context){return measured(req,ctx)}
+export async function POST(req:Request,ctx:Context){return measured(req,ctx)}
 async function handle(req:Request,ctx:Context){try{
   const {path}=await ctx.params, route=path.join("/");
   if(req.method==="POST") originCheck(req);
   if(route==="config" && req.method==="GET") return NextResponse.json(await deployment());
+  if(path[0]==='issuer'&&req.method==='POST'){
+    await rateLimit('issuer',req.headers.get('x-forwarded-for')??'local',60,3600);
+    const body=await jsonBody(req),d=await deployment();
+    if(path[1]==='authorize')return NextResponse.json(await authorizeSupplier(body));
+    if(path[1]==='register')return NextResponse.json(await registerVersion(body));
+    if(path[1]==='prepare'){
+      const pkg=versionSchema.omit({signature:true}).parse(body);
+      return NextResponse.json({domain:issuanceDomain(d.chainId,d.address),types:issueTypes,payload:versionPayload(pkg)});
+    }
+    if(path[1]==='authorization-format')return NextResponse.json({domain:issuanceDomain(d.chainId,d.address),types:supplierTypes});
+  }
   if(route==="auth/challenge" && req.method==="POST"){
     await assertDatabaseScope();
     const b=await jsonBody(req), wallet=address(z.string().parse(b.wallet));
@@ -49,6 +67,18 @@ async function handle(req:Request,ctx:Context){try{
     return NextResponse.json({...await verifyChainReceipt(provider,d,b),source:'live chain'});
   }
   const wallet=await actor();
+  if(route==='investigations'&&req.method==='POST'){
+    const b=await jsonBody(req);await lender();return NextResponse.json(await investigate(wallet,z.uuid().parse(b.submissionId),z.string().trim().min(1).max(1000).parse(b.question)));
+  }
+  if(route==='mcp-tokens'&&req.method==='POST'){
+    await lender();await rateLimit('mcp-token',wallet,5,3600);const b=await jsonBody(req),label=z.string().trim().min(1).max(80).parse(b.label),token=randomBytes(32).toString('base64url');
+    const expires=new Date(Date.now()+86400000),audience=process.env.APP_ORIGIN+'/api/mcp';
+    await db.query('INSERT INTO access_tokens(token_hash,owner,label,scopes,audience,expires_at) VALUES($1,$2,$3,$4,$5,$6)',[hash(token),wallet,label,['investigation:read'],audience,expires]);
+    return NextResponse.json({token,label,expiresAt:expires,audience,scopes:['investigation:read']});
+  }
+  if(route==='mcp-tokens'&&req.method==='GET')return NextResponse.json((await db.query('SELECT token_hash AS id,label,expires_at,revoked FROM access_tokens WHERE owner=$1 ORDER BY created_at DESC',[wallet])).rows);
+  if(route==='mcp-tokens/revoke'&&req.method==='POST'){const b=await jsonBody(req);await db.query('UPDATE access_tokens SET revoked=true WHERE token_hash=$1 AND owner=$2',[z.string().regex(/^[a-f0-9]{64}$/).parse(b.id),wallet]);return NextResponse.json({ok:true});}
+  if(route==='tool-audit'&&req.method==='GET')return NextResponse.json((await db.query('SELECT transport,tool,resource_id,outcome,created_at FROM tool_audit WHERE owner=$1 ORDER BY created_at DESC LIMIT 100',[wallet])).rows);
   if(route==="auth/session"&&req.method==="GET")return NextResponse.json({wallet});
   if(route==='institutions'&&req.method==='GET'){
     const {d,registry}=await chain();const {rows}=await db.query('SELECT synthetic_id,name,wallet FROM institutions WHERE chain_id=$1 AND registry=$2 ORDER BY synthetic_id',[d.chainId,address(d.address)]);
@@ -58,9 +88,9 @@ async function handle(req:Request,ctx:Context){try{
     const id=z.string().regex(/^[1-9]\d*$/).max(78).parse(path[1]),{d,registry,provider}=await chain();
     if(BigInt(id)>await registry.claimCount())throw new HttpError(404,'Claim not found');
     const c=await registry.getClaim(id);if(address(c.lender)!==wallet)throw new HttpError(404,'Claim not found');
-    const submitted=await db.query("SELECT id,original,normalised,pdf_digest,matching_token,evidence FROM submissions WHERE owner=$1 AND evidence->>'context'=$2",[wallet,c.evidenceContext]);
+    const submitted=await db.query("SELECT id,original,normalised,pdf_digest,matching_token,evidence,issuer_digest FROM submissions WHERE owner=$1 AND evidence->>'context'=$2",[wallet,c.evidenceContext]);
     const s=submitted.rows[0];let metadataConsistent=false;
-    if(s){try{metadataConsistent=s.matching_token===c.matchingToken&&matchingToken(s.original,process.env.REGISTRY_SECRET??'')===c.matchingToken&&storedEvidenceMatches(s.original,s.pdf_digest,s.evidence,c.evidenceRoot,c.evidenceContext)&&JSON.stringify(canonicalise(s.original))===JSON.stringify(canonicalise(s.normalised));}catch{}}
+    if(s){try{metadataConsistent=s.matching_token===c.matchingToken&&(s.issuer_digest?await historicalIssuanceToken(s.issuer_digest,s.original):matchingToken(s.original,process.env.REGISTRY_SECRET??''))===c.matchingToken&&storedEvidenceMatches(s.original,s.pdf_digest,s.evidence,c.evidenceRoot,c.evidenceContext,s.issuer_digest??undefined)&&JSON.stringify(canonicalise(s.original))===JSON.stringify(canonicalise(s.normalised));}catch{}}
     const block=await provider.getBlock('latest');
     return NextResponse.json({claimId:id,source:'live chain',chainId:d.chainId,contractAddress:d.address,recordedState:Number(c.state),effectiveState:Number(await registry.getEffectiveStatus(id)),lender:c.lender,evidenceRoot:c.evidenceRoot,evidenceContext:c.evidenceContext,schemaVersion:Number(c.schemaVersion),createdAt:Number(c.createdAt),reservationDeadline:Number(c.reservationDeadline),transitionedAt:Number(c.transitionedAt),observedBlock:{number:block?.number,hash:block?.hash},metadataConsistent,submission:s?{id:s.id,invoice:s.original,pdfDigest:s.pdf_digest}:null});
   }
@@ -76,32 +106,39 @@ async function handle(req:Request,ctx:Context){try{
   }
   if(route==="submissions" && req.method==="POST"){
     await lender();const b=await jsonBody(req), invoice=invoiceSchema.parse(b.invoice),key=z.uuid().parse(b.idempotencyKey),digest=z.string().regex(/^[a-f0-9]{64}$/).parse(b.pdfDigest);
-    const previous=await db.query("SELECT id,original,pdf_digest FROM submissions WHERE owner=$1 AND idempotency_key=$2",[wallet,key]);
-    if(previous.rowCount){if(JSON.stringify(canonicalise(previous.rows[0].original))!==JSON.stringify(canonicalise(invoice))||previous.rows[0].pdf_digest!==digest)throw new HttpError(409,"Idempotency key was used for another submission");return NextResponse.json({id:previous.rows[0].id});}
+    const issuerDigest=b.issuerDigest?z.string().regex(/^0x[\da-f]{64}$/i).parse(b.issuerDigest):null;
+    const previous=await db.query("SELECT id,original,pdf_digest,issuer_digest FROM submissions WHERE owner=$1 AND idempotency_key=$2",[wallet,key]);
+    if(previous.rowCount){if(JSON.stringify(canonicalise(previous.rows[0].original))!==JSON.stringify(canonicalise(invoice))||previous.rows[0].pdf_digest!==digest||(previous.rows[0].issuer_digest??null)!==issuerDigest)throw new HttpError(409,"Idempotency key was used for another submission");return NextResponse.json({id:previous.rows[0].id});}
     await rateLimit('submission',wallet,100,3600);
-    const normalised=canonicalise(invoice), token=matchingToken(invoice,process.env.REGISTRY_SECRET??"");
-    const evidence=buildEvidence(invoice,digest),id=randomUUID();
-    const {rows}=await db.query("INSERT INTO submissions(id,owner,idempotency_key,original,normalised,pdf_digest,matching_token,evidence) VALUES($1,$2,$3,$4,$5,$6,$7,$8) ON CONFLICT(owner,idempotency_key) DO UPDATE SET idempotency_key=EXCLUDED.idempotency_key RETURNING id,original,pdf_digest",[id,wallet,key,invoice,normalised,digest,token,evidence]);
-    if(JSON.stringify(canonicalise(rows[0].original))!==JSON.stringify(normalised)||rows[0].pdf_digest!==digest)throw new HttpError(409,'Idempotency key was used for another submission');return NextResponse.json({id:rows[0].id});
+
+    if(!issuerDigest){const issuer=(await db.query('SELECT wallet FROM suppliers WHERE country=$1 AND identifier_type=$2 AND identifier=$3',[canonicalise(invoice).supplierCountry,canonicalise(invoice).supplierIdentifierType,canonicalise(invoice).supplierIdentifier])).rows[0];if(issuer)throw new HttpError(409,'Registered suppliers require a signed current invoice package');}
+    const issued=issuerDigest?await checkedIssuance(issuerDigest,invoice):null;
+    const normalised=canonicalise(invoice), token=issued?.token??matchingToken(invoice,process.env.REGISTRY_SECRET??"");
+    const evidence=buildEvidence(invoice,digest,issuerDigest??undefined),id=randomUUID();
+    const {rows}=await db.query("INSERT INTO submissions(id,owner,idempotency_key,original,normalised,pdf_digest,matching_token,evidence,issuer_digest) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT(owner,idempotency_key) DO UPDATE SET idempotency_key=EXCLUDED.idempotency_key RETURNING id,original,pdf_digest,issuer_digest",[id,wallet,key,invoice,normalised,digest,token,evidence,issuerDigest]);
+    if(JSON.stringify(canonicalise(rows[0].original))!==JSON.stringify(normalised)||rows[0].pdf_digest!==digest||(rows[0].issuer_digest??null)!==issuerDigest)throw new HttpError(409,'Idempotency key was used for another submission');
+    return NextResponse.json({id:rows[0].id,issuerVerified:!!issued});
   }
   if(path[0]==="submissions"&&path.length===2&&req.method==="GET"){
     const s=await owned(z.uuid().parse(path[1]),wallet);
     const latest=await db.query("SELECT id,result,review FROM analyses WHERE submission_id=$1 AND owner=$2 ORDER BY created_at DESC LIMIT 1",[s.id,wallet]);
-    return NextResponse.json({id:s.id,invoice:s.original,pdfDigest:s.pdf_digest,analysis:latest.rows[0]?{id:latest.rows[0].id,...latest.rows[0].result,review:latest.rows[0].review}:null});
+    return NextResponse.json({id:s.id,invoice:s.original,pdfDigest:s.pdf_digest,issuerDigest:s.issuer_digest??null,analysis:latest.rows[0]?{id:latest.rows[0].id,...latest.rows[0].result,review:latest.rows[0].review}:null});
   }
   if(path[0]==="submissions" && path.length===3){
     const id=z.uuid().parse(path[1]),s=await owned(id,wallet);
+    if(path[2]==='lineage'&&req.method==='GET')return NextResponse.json(s.issuer_digest?await lineage(s.issuer_digest):[]);
     if(path[2]==="analyse" && req.method==="POST"){
       await lender();await rateLimit("analysis",wallet,100,3600);const {registry}=await chain(),current=await registry.currentClaim(s.matching_token),status=Number(await registry.getEffectiveStatus(current));
-      const pool=await db.query("SELECT id,owner,normalised,pdf_digest,matching_token FROM submissions WHERE id<>$1 ORDER BY created_at DESC LIMIT 10000",[id]);
-      const matches=pool.rows.filter(r=>r.matching_token===s.matching_token||isCandidate(s.normalised,r.normalised)).map(r=>({
+      const matchingStarted=performance.now(),candidates=await retrieveCandidates(db,s.normalised,s.pdf_digest,id,s.matching_token);
+      const matches=candidates.filter(r=>r.pdf_digest===s.pdf_digest||r.matching_token===s.matching_token||isCandidate(s.normalised,r.normalised)).map(r=>({
         relation:r.matching_token===s.matching_token?"EXACT_IDENTITY":"SIMILAR",sameFile:r.pdf_digest===s.pdf_digest,
         ...compare(s.normalised,r.normalised),reference:hash(r.id).slice(0,12)
-      })).filter(r=>r.relation==="EXACT_IDENTITY"||r.score>=REVIEW_THRESHOLD).sort((a,b)=>b.score-a.score).slice(0,20);
-      const result={ruleset:RULESET,status:status===1||status===2?"ACTIVE_CONFLICT":matches.some(m=>m.relation==="SIMILAR")?"REVIEW_REQUIRED":current>0n?"HISTORICAL_MATCH":"NO_ACTIVE_CONFLICT",claimId:current.toString(),matches,scanned:pool.rows.length,limited:pool.rows.length===10000};
+      })).filter(r=>r.sameFile||r.relation==="EXACT_IDENTITY"||r.score>=REVIEW_THRESHOLD).sort((a,b)=>b.score-a.score).slice(0,20);
+      const result={ruleset:RULESET,status:status===1||status===2?"ACTIVE_CONFLICT":matches.some(m=>m.relation==="SIMILAR")?"REVIEW_REQUIRED":current>0n?"HISTORICAL_MATCH":"NO_ACTIVE_CONFLICT",claimId:current.toString(),matches,scanned:candidates.length,limited:false,matchingMs:performance.now()-matchingStarted};
       const analysisId=randomUUID();await db.query("INSERT INTO analyses(id,submission_id,owner,result) VALUES($1,$2,$3,$4)",[analysisId,id,wallet,result]);return NextResponse.json({id:analysisId,...result});
     }
     if(path[2]==="attest" && req.method==="POST"){
+      if(s.issuer_digest)await checkedIssuance(s.issuer_digest,s.original);
       await lender();const b=await jsonBody(req),analysisId=z.uuid().parse(b.analysisId),requestKey=z.uuid().parse(b.idempotencyKey);
       const client=await db.connect();try{
       await client.query("BEGIN");await client.query("SELECT pg_advisory_xact_lock(hashtextextended($1,0))",[wallet+requestKey]);

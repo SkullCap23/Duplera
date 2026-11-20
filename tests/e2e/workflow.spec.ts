@@ -23,7 +23,7 @@ test("private API lifecycle, conflict protection and independent disclosure",asy
  const approvals=await Promise.all([a.post(`/api/submissions/${submission.id}/attest`,{data:approvalBody}),a.post(`/api/submissions/${submission.id}/attest`,{data:approvalBody})]);
  const approval=await approvals[0].json();expect(approval.signature).toBeTruthy();expect(await approvals[1].json()).toEqual(approval);
  const c=new Contract(config.address,config.abi,wallet(1).connect(rpc));const tx=await c.reserve(approval.payload,approval.signature);const receipt=await tx.wait();expect(receipt.status).toBe(1);const claimId=(await c.currentClaim(approval.payload.matchingToken)).toString();
- const tracked=await a.post('/api/transactions',{data:{hash:tx.hash,submissionId:submission.id}});expect(tracked.ok(),await tracked.text()).toBeTruthy();expect((await tracked.json()).status).toBe('CONFIRMED');
+ const tracked=await a.post('/api/transactions',{data:{hash:tx.hash,submissionId:submission.id}});expect(tracked.ok(),await tracked.text()).toBeTruthy();const tracking=await tracked.json();expect(tracking.status).toBe('CONFIRMED');await writeFile('docs/results/runtime-metrics.json',JSON.stringify({method:'Local deterministic chain; server registration timing includes polling delay, not wallet approval or broadcast latency',transaction:tracking.timing,serverTiming:tracked.headers()['server-timing'],rpcCalls:Number(tracked.headers()['x-duplera-rpc-calls'])},null,2));
  expect((await b.post('/api/transactions',{data:{hash:tx.hash,submissionId:duplicateIdForIsolation()}})).status()).toBe(403);
  await(await c.confirmFinancing(claimId)).wait();expect(Number(await c.getEffectiveStatus(claimId))).toBe(2);
  const details=await a.get('/api/claims/'+claimId);expect(details.ok(),await details.text()).toBeTruthy();expect((await details.json()).metadataConsistent).toBe(true);
@@ -57,7 +57,7 @@ test("browser extracts a PDF, signs a reservation and finances the claim",async(
  await page.goto("/");await expect(page.getByRole("heading",{name:"Finance with clarity."})).toBeVisible();
  await page.getByRole("button",{name:"Connect wallet"}).click();await expect(page.getByRole("status")).toContainText("signature verified");
  await page.locator('input[type="file"]').setInputFiles(resolve("data/synthetic/family-00000-base.pdf"));
- await expect(page.getByRole("status")).toContainText("Text extracted locally",{timeout:30000});
+ await expect(page.getByRole("status")).toContainText("Text extracted locally",{timeout:30000});const extraction=await page.evaluate(()=>performance.getEntriesByName('duplera-pdf-extraction').at(-1)?.duration);expect(extraction).toBeGreaterThan(0);await writeFile('docs/results/extraction-metrics.json',JSON.stringify({method:'Browser wall time: hashing, PDF parsing, text and field extraction; no RPC or matching',elapsedMs:extraction},null,2));
  await page.getByLabel("invoice Number",{exact:true}).fill(`UI-${Date.now()}`);
  await page.getByRole("checkbox").check();await page.getByRole("button",{name:"Analyse invoice"}).click();
  await expect(page.getByRole("status")).toContainText("Analysis complete");
@@ -73,6 +73,13 @@ test("browser extracts a PDF, signs a reservation and finances the claim",async(
  await page.screenshot({path:"docs/results/claim-explorer.png",fullPage:true});
  await page.getByRole("button",{name:"Lender workspace"}).click();await page.evaluate(()=>window.scrollTo(0,0));
  await page.screenshot({path:"docs/results/workspace.png",fullPage:true});
+ await page.getByRole("button",{name:/Claim explorer/}).click();
+ await page.route('**/api/**',route=>route.abort('failed'));
+ await page.getByRole("button",{name:"Release financing",exact:true}).click();
+ await expect(page.getByRole('status')).toContainText('Financing released',{timeout:30000});
+ await page.unroute('**/api/**');await page.reload();
+ await expect(page.getByRole('status')).toContainText('workspace restored',{timeout:30000});
+ await expect(page.locator('.history-row').filter({hasText:'releaseFinancing'}).first()).toBeVisible();
  expect(errors).toEqual([]);
 });
 function duplicateIdForIsolation(){return randomUUID()}

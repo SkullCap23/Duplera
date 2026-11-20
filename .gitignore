@@ -14,3 +14,5 @@ apps/web/public/pdf.worker.min.mjs
 .local/
 test-results/
 playwright-report/
+
+data/synthetic-v2/

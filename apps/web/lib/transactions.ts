@@ -47,5 +47,7 @@ export async function reconcileTransaction(wallet:string,hash:string){
     }
   }
   await db.query("UPDATE wallet_transactions SET status=$1,claim_id=$2,block_number=$3,block_hash=$4,updated_at=now() WHERE chain_id=$5 AND registry=$6 AND tx_hash=$7 AND owner=$8",[status,claimId,blockNumber,blockHash,d.chainId,address(d.address),hash,wallet]);
-  return {hash,action:saved.action,submissionId:saved.submission_id,claimId,status,blockNumber,blockHash};
+  await db.query("UPDATE wallet_transactions SET included_at=CASE WHEN $1 IN ('INCLUDED','CONFIRMED') THEN coalesce(included_at,now()) ELSE included_at END,confirmed_at=CASE WHEN $1='CONFIRMED' THEN coalesce(confirmed_at,now()) ELSE confirmed_at END WHERE chain_id=$2 AND registry=$3 AND tx_hash=$4 AND owner=$5",[status,d.chainId,address(d.address),hash,wallet]);
+  const timing=(await db.query('SELECT created_at,included_at,confirmed_at FROM wallet_transactions WHERE chain_id=$1 AND registry=$2 AND tx_hash=$3 AND owner=$4',[d.chainId,address(d.address),hash,wallet])).rows[0];
+  return {hash,action:saved.action,submissionId:saved.submission_id,claimId,status,blockNumber,blockHash,timing:{method:'Server-observed transaction registration, first canonical inclusion and policy confirmation; includes polling delay',registeredAt:timing.created_at,includedAt:timing.included_at,confirmedAt:timing.confirmed_at,registrationToInclusionMs:timing.included_at?new Date(timing.included_at).getTime()-new Date(timing.created_at).getTime():null,registrationToConfirmationMs:timing.confirmed_at?new Date(timing.confirmed_at).getTime()-new Date(timing.created_at).getTime():null}};
 }

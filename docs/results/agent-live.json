@@ -1,0 +1,44 @@
+{
+  "checkedAt": "2026-11-20T17:36:30.846Z",
+  "provider": "gemini",
+  "model": "gemini-3.1-flash-lite",
+  "toolTrace": [
+    {
+      "tool": "get_claim_status",
+      "sourceId": "chain:ea808a9b-b608-4266-9016-9873be6362a0"
+    },
+    {
+      "tool": "get_submission",
+      "sourceId": "submission:ea808a9b-b608-4266-9016-9873be6362a0"
+    },
+    {
+      "tool": "get_lineage",
+      "sourceId": "lineage:ea808a9b-b608-4266-9016-9873be6362a0"
+    },
+    {
+      "tool": "get_analysis",
+      "sourceId": "analysis:ea808a9b-b608-4266-9016-9873be6362a0"
+    }
+  ],
+  "findings": [
+    {
+      "id": "financing-state",
+      "statement": "No effective active financing claim was observed at block 62.",
+      "sourceId": "chain:ea808a9b-b608-4266-9016-9873be6362a0",
+      "critical": true
+    },
+    {
+      "id": "supplier-issuance",
+      "statement": "The invoice has a valid registered supplier signature and is the current version.",
+      "sourceId": "lineage:ea808a9b-b608-4266-9016-9873be6362a0",
+      "critical": true
+    },
+    {
+      "id": "submitted-assertions",
+      "statement": "Invoice fields are submitted assertions. Signatures and commitments do not establish goods delivery, legal priority or actual payment.",
+      "sourceId": "submission:ea808a9b-b608-4266-9016-9873be6362a0",
+      "critical": true
+    }
+  ],
+  "syntheticData": true
+}

@@ -12,6 +12,10 @@ CREATE TABLE IF NOT EXISTS submissions (
 );
 CREATE INDEX IF NOT EXISTS submissions_token_idx ON submissions(matching_token);
 CREATE INDEX IF NOT EXISTS submissions_owner_idx ON submissions(owner);
+CREATE INDEX IF NOT EXISTS submissions_digest_idx ON submissions(pdf_digest);
+CREATE INDEX IF NOT EXISTS submissions_supplier_date_idx ON submissions((normalised->>'supplierIdentifier'),(normalised->>'invoiceDate'));
+CREATE INDEX IF NOT EXISTS submissions_buyer_amount_idx ON submissions((normalised->>'buyerIdentifier'),(normalised->>'currency'),((normalised->>'amountMinor')::numeric));
+CREATE INDEX IF NOT EXISTS submissions_date_idx ON submissions((normalised->>'invoiceDate'));
 CREATE TABLE IF NOT EXISTS analyses (
  id uuid PRIMARY KEY, submission_id uuid NOT NULL REFERENCES submissions(id), owner text NOT NULL,
  result jsonb NOT NULL, review text, reviewed_at timestamptz, created_at timestamptz NOT NULL DEFAULT now()
@@ -71,4 +75,29 @@ CREATE TABLE IF NOT EXISTS registry_configuration (
 CREATE TABLE IF NOT EXISTS institutions (
  chain_id bigint NOT NULL, registry text NOT NULL, synthetic_id text NOT NULL, name text NOT NULL, wallet text NOT NULL,
  PRIMARY KEY(chain_id,registry,wallet), UNIQUE(chain_id,registry,synthetic_id)
+);
+CREATE TABLE IF NOT EXISTS suppliers (
+ wallet text PRIMARY KEY,country text NOT NULL,identifier_type text NOT NULL,identifier text NOT NULL,
+ active boolean NOT NULL,revision bigint NOT NULL,enrollment jsonb NOT NULL,
+ UNIQUE(country,identifier_type,identifier)
+);
+ALTER TABLE wallet_transactions ADD COLUMN IF NOT EXISTS included_at timestamptz;
+ALTER TABLE wallet_transactions ADD COLUMN IF NOT EXISTS confirmed_at timestamptz;
+CREATE TABLE IF NOT EXISTS invoice_versions (
+ digest text PRIMARY KEY,issuer text NOT NULL REFERENCES suppliers(wallet),receivable_id uuid NOT NULL,
+ version integer NOT NULL,previous_digest text NOT NULL,genesis_identity text NOT NULL,package jsonb NOT NULL,
+ created_at timestamptz NOT NULL DEFAULT now(),UNIQUE(issuer,receivable_id,version)
+);
+ALTER TABLE submissions ADD COLUMN IF NOT EXISTS issuer_digest text REFERENCES invoice_versions(digest);
+CREATE TABLE IF NOT EXISTS access_tokens (
+ token_hash text PRIMARY KEY,owner text NOT NULL,label text NOT NULL,scopes text[] NOT NULL,
+ audience text NOT NULL,expires_at timestamptz NOT NULL,revoked boolean NOT NULL DEFAULT false,created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE TABLE IF NOT EXISTS tool_audit (
+ id uuid PRIMARY KEY,owner text NOT NULL,transport text NOT NULL,tool text NOT NULL,
+ resource_id text,outcome text NOT NULL,created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE TABLE IF NOT EXISTS investigations (
+ id uuid PRIMARY KEY,owner text NOT NULL,submission_id uuid NOT NULL REFERENCES submissions(id),
+ report jsonb NOT NULL,created_at timestamptz NOT NULL DEFAULT now()
 );

@@ -1,0 +1,13 @@
+{
+  "method": "Local deterministic chain; server registration timing includes polling delay, not wallet approval or broadcast latency",
+  "transaction": {
+    "method": "Server-observed transaction registration, first canonical inclusion and policy confirmation; includes polling delay",
+    "registeredAt": "2026-11-20T17:52:46.987Z",
+    "includedAt": "2026-11-20T17:52:47.077Z",
+    "confirmedAt": "2026-11-20T17:52:47.077Z",
+    "registrationToInclusionMs": 90,
+    "registrationToConfirmationMs": 90
+  },
+  "serverTiming": "application;dur=160.32, rpc;desc=\"13 calls\"",
+  "rpcCalls": 13
+}

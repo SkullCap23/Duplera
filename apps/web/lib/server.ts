@@ -5,6 +5,7 @@ import {resolve} from "node:path";
 import {createHash,randomBytes} from "node:crypto";
 import {cookies} from "next/headers";
 import {databaseConfig} from './database-config';
+import {MeasuredRpcProvider} from './rpc-metrics';
 const globalDb=globalThis as typeof globalThis & {dupleraPool?:Pool;dupleraRpc?:{url:string;provider:JsonRpcProvider}};
 export const db=globalDb.dupleraPool??new Pool({...databaseConfig(process.env.DATABASE_URL,process.env.DATABASE_CA_BASE64),max:5,connectionTimeoutMillis:10000});
 globalDb.dupleraPool=db;
@@ -21,7 +22,7 @@ export async function deployment(){
 export async function chain(){
   const d=await deployment(); const url=process.env.RPC_URL??"http://127.0.0.1:8545";
   // Free RPC endpoints may reject batches even when each individual method is supported.
-  if(globalDb.dupleraRpc?.url!==url){globalDb.dupleraRpc?.provider.destroy();globalDb.dupleraRpc={url,provider:new JsonRpcProvider(url,undefined,{cacheTimeout:-1,batchMaxCount:1})};}
+  if(globalDb.dupleraRpc?.url!==url){globalDb.dupleraRpc?.provider.destroy();globalDb.dupleraRpc={url,provider:new MeasuredRpcProvider(url,undefined,{cacheTimeout:-1,batchMaxCount:1})};}
   const provider=globalDb.dupleraRpc.provider;
   if(Number((await provider.getNetwork()).chainId)!==d.chainId) throw new Error("RPC network mismatch");
   if(await provider.getCode(d.address)==="0x") throw new Error("Registry is not deployed on configured network");

@@ -1,5 +1,6 @@
 import { canonicalise, type Invoice } from "@duplera/domain";
-export const RULESET = "structured-v1";
+import {lineItemOverlap} from '../../domain/src/line-items';
+export const RULESET = "structured-v2";
 export const REVIEW_THRESHOLD = 0.78;
 export function resemblance(a: string, b: string): number {
   if (!a || !b) return 0;
@@ -27,6 +28,8 @@ export function compare(left: Invoice, right: Invoice) {
     {name:"currency",value:Number(a.currency===b.currency),weight:0.05},
     {name:"description overlap",value:overlap,weight:0.10},
   ];
+  const items=lineItemOverlap(a.lineItemsJson,b.lineItemsJson);
+  if(items!==null){for(const signal of signals)signal.weight*=0.85;signals.push({name:'structured line items',value:items,weight:0.15});}
   return {score: signals.reduce((s,x)=>s+x.value*x.weight,0), signals, dayGap};
 }
 export function isCandidate(a: Invoice,b: Invoice): boolean {

@@ -1,6 +1,8 @@
 import {spawn} from 'node:child_process';import {mkdir,writeFile} from 'node:fs/promises';
+import {loadEnvironment} from './lib/environment';
+await loadEnvironment('apps/web/.env.local');
 const cli=process.env.npm_execpath;if(!cli)throw new Error('Run through npm run validate');
-const names=['doctor','compile','typecheck','test','test:contracts','test:baseline','test:deployment','test:projection','build','test:e2e','verify:receipt'];
+const names=['doctor','compile','typecheck','test','test:contracts','test:baseline','test:candidates','test:deployment','test:projection','build','test:e2e','test:outages','verify:receipt'];
 const checks:{command:string;exitCode:number;elapsedMs:number}[]=[];
 for(const name of names){
  const start=Date.now(),args=[cli,'run',name,...(name==='verify:receipt'?['--','.local/receipt-valid.json']:[])];

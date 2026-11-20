@@ -1,0 +1,14 @@
+{
+  "checkedAt": "2026-11-20T17:54:31.838Z",
+  "method": "Managed local shutdown followed by one-command startup on a reset development chain",
+  "shutdownReleasedPorts": [
+    3001,
+    5432,
+    8545
+  ],
+  "freshDatabaseEncoding": "UTF8",
+  "preservedPriorDatabases": true,
+  "preservedDeploymentBackups": true,
+  "httpReadiness": true,
+  "acceptanceAfterRestart": true
+}
