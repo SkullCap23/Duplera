@@ -19,6 +19,7 @@ export async function POST(req:Request){
   return await serveMcp(new Request(req.url,{method:'POST',headers:req.headers,body:JSON.stringify(body)}),(name,args)=>executeInvestigationTool(token.owner,'mcp',name,args));
  }catch(error){
   const status=error instanceof HttpError?error.status:503;
+  if(status===503)console.error('MCP service failure',{code:(error as {code?:string})?.code??'UNKNOWN',frames:(error as Error)?.stack?.split('\n').slice(1,4)});
   return Response.json({error:status===503?'MCP service unavailable':(error as Error).message},{status,headers:status===401?{'WWW-Authenticate':'Bearer realm="Duplera MCP"'}:undefined});
  }
 }

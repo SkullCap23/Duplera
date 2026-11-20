@@ -1,5 +1,5 @@
 import {Pool} from "pg";
-import {Contract,JsonRpcProvider,Wallet,getAddress} from "ethers";
+import {Contract,JsonRpcProvider,Wallet,getAddress,FetchRequest} from "ethers";
 import {readFile} from "node:fs/promises";
 import {resolve} from "node:path";
 import {createHash,randomBytes} from "node:crypto";
@@ -22,7 +22,7 @@ export async function deployment(){
 export async function chain(){
   const d=await deployment(); const url=process.env.RPC_URL??"http://127.0.0.1:8545";
   // Free RPC endpoints may reject batches even when each individual method is supported.
-  if(globalDb.dupleraRpc?.url!==url){globalDb.dupleraRpc?.provider.destroy();globalDb.dupleraRpc={url,provider:new MeasuredRpcProvider(url,undefined,{cacheTimeout:-1,batchMaxCount:1})};}
+  if(globalDb.dupleraRpc?.url!==url){globalDb.dupleraRpc?.provider.destroy();const endpoint=new FetchRequest(url);endpoint.timeout=12000;globalDb.dupleraRpc={url,provider:new MeasuredRpcProvider(endpoint,undefined,{cacheTimeout:-1,batchMaxCount:1})};}
   const provider=globalDb.dupleraRpc.provider;
   if(Number((await provider.getNetwork()).chainId)!==d.chainId) throw new Error("RPC network mismatch");
   if(await provider.getCode(d.address)==="0x") throw new Error("Registry is not deployed on configured network");
