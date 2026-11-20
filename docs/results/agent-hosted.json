@@ -1,0 +1,63 @@
+{
+  "checkedAt": "2026-11-20T18:29:51.392Z",
+  "origin": "https://duplera.vercel.app",
+  "provider": "gemini",
+  "trace": [
+    {
+      "tool": "get_claim_status",
+      "sourceId": "chain:1f3f9b44-f0d4-469e-951b-cbd6d1096566"
+    },
+    {
+      "tool": "get_submission",
+      "sourceId": "submission:1f3f9b44-f0d4-469e-951b-cbd6d1096566"
+    },
+    {
+      "tool": "get_lineage",
+      "sourceId": "lineage:1f3f9b44-f0d4-469e-951b-cbd6d1096566"
+    },
+    {
+      "tool": "get_analysis",
+      "sourceId": "analysis:1f3f9b44-f0d4-469e-951b-cbd6d1096566"
+    }
+  ],
+  "findings": [
+    {
+      "id": "financing-state",
+      "statement": "No effective active financing claim was observed at block 53376625.",
+      "sourceId": "chain:1f3f9b44-f0d4-469e-951b-cbd6d1096566",
+      "critical": true
+    },
+    {
+      "id": "supplier-issuance",
+      "statement": "The invoice has a valid registered supplier signature and is the current version.",
+      "sourceId": "lineage:1f3f9b44-f0d4-469e-951b-cbd6d1096566",
+      "critical": true
+    },
+    {
+      "id": "amendment-history",
+      "statement": "The receivable has 2 registered versions. Amendments retain the original financing identity, including when invoice numbers change.",
+      "sourceId": "lineage:1f3f9b44-f0d4-469e-951b-cbd6d1096566",
+      "critical": true
+    },
+    {
+      "id": "submitted-assertions",
+      "statement": "Invoice fields are submitted assertions. Signatures and commitments do not establish goods delivery, legal priority or actual payment.",
+      "sourceId": "submission:1f3f9b44-f0d4-469e-951b-cbd6d1096566",
+      "critical": true
+    },
+    {
+      "id": "analysis-snapshot",
+      "statement": "The saved analysis reported NO_ACTIVE_CONFLICT; this is a historical snapshot.",
+      "sourceId": "analysis:1f3f9b44-f0d4-469e-951b-cbd6d1096566"
+    },
+    {
+      "id": "matching-evidence",
+      "statement": "The saved analysis contains 1 matching record(s). Similarity indicates possible reuse and does not establish fraudulent intent.",
+      "sourceId": "analysis:1f3f9b44-f0d4-469e-951b-cbd6d1096566"
+    }
+  ],
+  "limitations": [
+    "Not a fraud verdict or proof of trade authenticity.",
+    "Model orders verified findings; it cannot override financing rules."
+  ]
+}
