@@ -1,0 +1,62 @@
+{
+  "checkedAt": "2026-11-22T12:49:30.748Z",
+  "environment": "Actual hosted test-case data and live Amoy RPC/Gemini, invoking updated server code locally before deployment",
+  "submissionId": "5b6ea818-15df-40db-be48-9c8f1f94ee16",
+  "claimId": "5",
+  "originalDefect": "Evidence calls succeeded, but final model text was not valid JSON",
+  "provider": "gemini",
+  "financingState": "FINANCED",
+  "supplierSignatureValid": false,
+  "trace": [
+    {
+      "tool": "get_claim_status",
+      "sourceId": "chain:5b6ea818-15df-40db-be48-9c8f1f94ee16"
+    },
+    {
+      "tool": "get_submission",
+      "sourceId": "submission:5b6ea818-15df-40db-be48-9c8f1f94ee16"
+    },
+    {
+      "tool": "get_lineage",
+      "sourceId": "lineage:5b6ea818-15df-40db-be48-9c8f1f94ee16"
+    },
+    {
+      "tool": "get_analysis",
+      "sourceId": "analysis:5b6ea818-15df-40db-be48-9c8f1f94ee16"
+    }
+  ],
+  "findings": [
+    {
+      "id": "financing-state",
+      "statement": "An active FINANCED claim blocks a new reservation.",
+      "sourceId": "chain:5b6ea818-15df-40db-be48-9c8f1f94ee16",
+      "critical": true
+    },
+    {
+      "id": "supplier-issuance",
+      "statement": "Verified supplier issuance has not been established.",
+      "sourceId": "lineage:5b6ea818-15df-40db-be48-9c8f1f94ee16",
+      "critical": true
+    },
+    {
+      "id": "submitted-assertions",
+      "statement": "Invoice fields are submitted assertions. Signatures and commitments do not establish goods delivery, legal priority or actual payment.",
+      "sourceId": "submission:5b6ea818-15df-40db-be48-9c8f1f94ee16",
+      "critical": true
+    },
+    {
+      "id": "analysis-snapshot",
+      "statement": "The saved analysis reported ACTIVE_CONFLICT; this is a historical snapshot.",
+      "sourceId": "analysis:5b6ea818-15df-40db-be48-9c8f1f94ee16"
+    },
+    {
+      "id": "matching-evidence",
+      "statement": "The saved analysis contains 1 matching record(s). Similarity indicates possible reuse and does not establish fraudulent intent.",
+      "sourceId": "analysis:5b6ea818-15df-40db-be48-9c8f1f94ee16"
+    }
+  ],
+  "modelRequests": 4,
+  "untrustedOutputRendered": false,
+  "paidFallback": false,
+  "financingTransactionsBroadcast": 0
+}

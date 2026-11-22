@@ -17,3 +17,14 @@ export function groundedSelection(facts:Fact[],selected:string[]){
  if(selected.some(id=>!facts.some(f=>f.id===id)))throw new Error('Model cited an unknown fact');
  return [...new Set([...facts.filter(f=>f.critical).map(f=>f.id),...selected])].map(id=>facts.find(f=>f.id===id)!);
 }
+export function factSelectionSchema(facts:Fact[]){
+ if(!facts.length)throw Error('Verified facts are required');
+ return {type:'object',properties:{selectedFactIds:{type:'array',items:{type:'string',enum:facts.map(f=>f.id)},maxItems:facts.length}},required:['selectedFactIds'],additionalProperties:false};
+}
+export function parseFactSelection(text:string,facts:Fact[]):string[]{
+ const value:unknown=JSON.parse(text.trim().replace(/^```(?:json)?\s*|\s*```$/g,''));
+ if(!value||typeof value!=='object'||Array.isArray(value)||Object.keys(value).length!==1)throw Error('Invalid selection shape');
+ const selected=(value as {selectedFactIds?:unknown}).selectedFactIds;
+ if(!Array.isArray(selected)||selected.length>facts.length||selected.some(id=>typeof id!=='string'))throw Error('Invalid selection shape');
+ groundedSelection(facts,selected);return selected;
+}
