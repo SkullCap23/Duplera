@@ -16,7 +16,7 @@ Supplier registration identifies an administrator-approved key, not a legally ve
 
 Select your saved submission in Claim explorer, then open Investigation agent. The agent calls owner-scoped tools and produces source-linked findings with a trace and downloadable case brief. Current chain state takes precedence over saved analysis. Invoice text is untrusted data; the model can select verified fact IDs and cannot invent citations or suppress critical financing facts. It cannot submit transactions.
 
-The hosted adapter uses GEMINI_API_KEY and defaults to gemini-3.1-flash-lite, with four bounded model steps, fixed tool permissions and no paid fallback. Use a free-tier project with billing disabled. Quota errors stop the request. The selected invoice fields and permitted evidence are sent to Gemini. AGENT_PROVIDER=ollama uses a loopback Ollama server and an installed model; that adapter needs its own local model smoke test. AGENT_PROVIDER=evidence-only produces an explicitly labelled deterministic evidence report, not an LLM run.
+The hosted adapter uses GROQ_API_KEY and defaults to openai/gpt-oss-20b, with four bounded model steps, fixed tool permissions and no paid fallback. Use a free-tier project with billing disabled. Quota errors stop the request. The selected invoice fields and permitted evidence are sent to Groq. AGENT_PROVIDER=ollama uses a loopback Ollama server and an installed model; that adapter needs its own local model smoke test. AGENT_PROVIDER=evidence-only produces an explicitly labelled deterministic evidence report, not an LLM run.
 
 ## External MCP client
 

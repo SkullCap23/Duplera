@@ -16,7 +16,7 @@ const values=keys.map(key=>{
  return key+'='+env[key];
 });
 values.push('DATABASE_CA_BASE64='+ca);
-for(const key of ['GEMINI_API_KEY','GEMINI_MODEL','AGENT_PROVIDER','OLLAMA_MODEL'])if(env[key])values.push(key+'='+env[key]);
+for(const key of ['GROQ_API_KEY','GROQ_MODEL','AGENT_PROVIDER','OLLAMA_MODEL'])if(env[key])values.push(key+'='+env[key]);
 if(env.APP_ORIGIN)values.push('APP_ORIGIN='+env.APP_ORIGIN);
 await writeFile('.local/vercel.env',values.join('\n')+'\n',{mode:0o600});
 console.log('Verified the production database TLS configuration and wrote ignored .local/vercel.env. Import this file into Vercel only; never commit or share its contents in chat.');

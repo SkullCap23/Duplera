@@ -17,7 +17,7 @@ for(const signal of ['SIGINT','SIGTERM'] as const)process.on(signal,()=>{stop().
 try{
  await mkdir('.local',{recursive:true});
  const cloud=await readEnvironment('.local/cloud.env');
- for(const key of ['GEMINI_API_KEY','GEMINI_MODEL','AGENT_PROVIDER','OLLAMA_MODEL','OLLAMA_URL'])if(cloud[key]&&!process.env[key])process.env[key]=cloud[key];
+ for(const key of ['GROQ_API_KEY','GROQ_MODEL','AGENT_PROVIDER','OLLAMA_MODEL','OLLAMA_URL'])if(cloud[key]&&!process.env[key])process.env[key]=cloud[key];
  if(!await open(5432)){start([tsx,'scripts/postgres.ts']);await wait(5432);}
  for(let attempt=0;;attempt++){const pool=new Pool({connectionString:'postgres://duplera:duplera@127.0.0.1:5432/postgres',connectionTimeoutMillis:1000});try{await pool.query('SELECT 1');break}catch(error){if(attempt>=60)throw error;await new Promise(r=>setTimeout(r,1000))}finally{await pool.end()}}
  if(!await open(8545)){start([resolve('node_modules/hardhat/dist/src/cli.js'),'node']);await wait(8545);}
