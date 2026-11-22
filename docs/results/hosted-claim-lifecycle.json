@@ -1,0 +1,30 @@
+{
+  "checkedAt": "2026-11-08T18:57:29.026Z",
+  "chainId": 80002,
+  "contract": "0xB276dA7975e136306d2fab600b6Dfe058158F9E5",
+  "claims": [
+    {
+      "id": 1,
+      "recordedState": 5,
+      "effectiveState": 5
+    },
+    {
+      "id": 2,
+      "recordedState": 3,
+      "effectiveState": 3
+    },
+    {
+      "id": 3,
+      "recordedState": 4,
+      "effectiveState": 4
+    }
+  ],
+  "expiryEvent": [
+    {
+      "transactionHash": "0x4d6ffc739fd5616a5a1af10d9425d8ab8176d11679398dbfb5b15ddf59ccdd92",
+      "blockNumber": 52341579,
+      "blockHash": "0x2ce1967c4213f511ec733f8a32f59a16c9f7d0893901b5429bd09831a93137b4"
+    }
+  ],
+  "activeTestClaims": 0
+}

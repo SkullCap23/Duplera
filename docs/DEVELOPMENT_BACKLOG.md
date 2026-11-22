@@ -2,8 +2,22 @@
 
 ## Follow-ups requested during manual testing
 
-- **Investigation agent UI readability — implemented 22 November 2026.** Added claim/issuance summary, grouped finding cards, source links, version table, readable tool trace and separate limitations. Desktop/mobile preview checked; production build and 21 unit tests passed. Hosted manual confirmation remains pending. Removed the investigation-specific five-per-hour cap at the user’s request; provider limits and owner authorization remain enforced.
-- **MCP issuance terminology — discovered during manual ChatGPT integration testing.** Distinguish an unsigned legacy invoice from a submitted signature that fails cryptographic verification. The current boolean `signatureValid: false` led the external client to describe an unsigned record as having an invalid signature. Expose an explicit issuance status so absence is not misrepresented as failed verification.
+- **Investigation agent UI readability — implemented 22 November 2026.** Added claim/issuance summary, grouped finding cards, source links, version table, readable tool trace and separate limitations. Desktop/mobile preview checked; production build and 21 unit tests passed. Hosted manual confirmation passed with Groq, signed amendment lineage, source links and four evidence reads. Greeting/scope handling and evidence-override resistance also passed manually. Removed the investigation-specific five-per-hour cap at the user’s request; provider limits and owner authorization remain enforced.
+- **MCP issuance terminology — P4 / very low priority, deferred beyond demo.** Distinguish an unsigned legacy invoice from a submitted signature that fails cryptographic verification. The current boolean `signatureValid: false` led the external client to describe an unsigned record as having an invalid signature. Expose an explicit issuance status so absence is not misrepresented as failed verification.
+
+## Deferred closeout — P4 / very low priority
+
+User decision on 22 November 2026: leave the following remaining work outside the current demo scope. These are recorded follow-ups, not completed work or blockers for the agreed demo. Do not resume them unless requested.
+
+- **MCP version clarity:** explicitly distinguish the submitted version, latest head and version committed by a financing claim.
+- **Signed-package match wording:** replace “identical PDF bytes” when the matching input is a signed JSON package.
+- **Intermittent wallet/network error:** investigate the initial reservation error before the subsequent successful Claim #6 reservation; preserve checks against duplicate broadcasts.
+- **MetaMask balance latency:** investigate delayed balance display if needed; Amoy test POL refill completed (user confirmed 1.0274 POL).
+- **Manual evidence and final regression closeout:** consolidate the full manual test record and run a final full regression on the latest code. Latest targeted verification passed 24 unit tests, typechecking and production build; this does not imply a fresh full acceptance run.
+- **Dependency notices:** retain and review the upstream solidity-analyzer licence-notice flags when undertaking broader release cleanup.
+- **MCP issuance terminology:** the unsigned-versus-invalid-signature distinction described above is also P4 / very low priority.
+
+The investigation agent is accepted as sufficient for the demo. The user explicitly requested leaving its current scope response unchanged, including the synthetic self-harm-language test; no additional conversational behavior is planned for this demo.
 
 Work started 20 November 2026. Existing live claims, secrets and deployment remain intact. No item is complete merely because code exists: tests and deployment evidence are required.
 

@@ -1,0 +1,11 @@
+{
+  "recipient": "0x540d361399d6eBbFf6d9F431686F78ECD2261CF1",
+  "chainId": 80002,
+  "contract": "0xB276dA7975e136306d2fab600b6Dfe058158F9E5",
+  "authorised": true,
+  "balancePOL": "0.1",
+  "transactions": {
+    "authorise": "0x5c4f9dd8803b2523b1520038bf4cb7e69de9913d703db1914601edb36dd05bdc",
+    "fund": "0x0a984cdfae4ce6e74ffe08f2667cec1d9c3181f2e28363579490d8e762fb7001"
+  }
+}

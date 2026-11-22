@@ -1,1 +1,3 @@
 https://faucet.polygon.technology
+
+check balance: https://amoy.polygonscan.com/address/0xfd26D0628a1ebb8B992f12257FF92BbfC21B116f
