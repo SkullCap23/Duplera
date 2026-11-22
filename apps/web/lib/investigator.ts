@@ -1,3 +1,4 @@
+import {investigationScopeReply} from '../../../packages/domain/src/investigation-scope';
 import {randomUUID} from 'node:crypto';
 import {db,owned,HttpError} from './server';
 import {executeInvestigationTool,investigationTools} from './investigation-tools';
@@ -7,6 +8,8 @@ import {runGroqInvestigation,GroqInvestigationError} from './groq-investigation'
 
 export async function investigate(owner:string,submissionId:string,question:string){
  await owned(submissionId,owner);
+ const scopeReply=investigationScopeReply(question);
+ if(scopeReply)return {kind:'scope' as const,message:scopeReply};
  const evidence:Record<string,any>={},trace:{tool:string;sourceId?:string}[]=[];
  const call=async(name:string,args:any)=>{
   if(args.submissionId!==submissionId||name==='verify_disclosure')throw new HttpError(403,'Agent tool call is outside the selected case');
