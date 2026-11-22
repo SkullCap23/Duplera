@@ -1,5 +1,10 @@
 # End-to-end extension acceptance tracker
 
+## Follow-ups requested during manual testing
+
+- **Investigation agent UI readability — implemented 22 November 2026.** Added claim/issuance summary, grouped finding cards, source links, version table, readable tool trace and separate limitations. Desktop/mobile preview checked; production build and 21 unit tests passed. Hosted manual confirmation remains pending. Removed the investigation-specific five-per-hour cap at the user’s request; provider limits and owner authorization remain enforced.
+- **MCP issuance terminology — discovered during manual ChatGPT integration testing.** Distinguish an unsigned legacy invoice from a submitted signature that fails cryptographic verification. The current boolean `signatureValid: false` led the external client to describe an unsigned record as having an invalid signature. Expose an explicit issuance status so absence is not misrepresented as failed verification.
+
 Work started 20 November 2026. Existing live claims, secrets and deployment remain intact. No item is complete merely because code exists: tests and deployment evidence are required.
 
 | Item | Acceptance condition | Status |

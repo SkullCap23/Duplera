@@ -1,12 +1,12 @@
 import {randomUUID} from 'node:crypto';
-import {db,owned,HttpError,rateLimit} from './server';
+import {db,owned,HttpError} from './server';
 import {executeInvestigationTool,investigationTools} from './investigation-tools';
 import {investigationFacts,groundedSelection,parseFactSelection} from '../../../packages/domain/src/agent';
 
 import {runGroqInvestigation,GroqInvestigationError} from './groq-investigation';
 
 export async function investigate(owner:string,submissionId:string,question:string){
- await owned(submissionId,owner);await rateLimit('investigate',owner,5,3600);
+ await owned(submissionId,owner);
  const evidence:Record<string,any>={},trace:{tool:string;sourceId?:string}[]=[];
  const call=async(name:string,args:any)=>{
   if(args.submissionId!==submissionId||name==='verify_disclosure')throw new HttpError(403,'Agent tool call is outside the selected case');
