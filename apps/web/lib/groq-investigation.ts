@@ -22,14 +22,14 @@ export async function runGroqInvestigation(input:Input,request:typeof fetch=fetc
  for(const expected of ['get_submission','get_lineage','get_analysis']){
   if(Buffer.byteLength(JSON.stringify(messages))>64000)throw new GroqInvestigationError(413,'Case evidence exceeds the bounded investigation budget');
   // Re-state the required next action after each untrusted tool response.
-  const stepMessages=[...messages,{role:'user',content:'Now call '+expected+' exactly once with submissionId '+input.submissionId+'. Do not repeat earlier tools or produce the final report yet.'}];
-  const result=await complete({messages:stepMessages,tools:input.tools.map(t=>({type:'function',function:t})),tool_choice:{type:'function',function:{name:expected}},parallel_tool_calls:false},expected);
+  const stepMessages=[...messages,{role:'user',content:'Now call '+expected+' exactly once with an empty JSON object {}. The server binds this tool to the selected case. Do not supply a submission ID, repeat earlier tools or produce the final report yet.'}];
+  const result=await complete({messages:stepMessages,tools:input.tools.map(t=>({type:'function',function:{...t,description:t.description+' Already bound to the selected case; takes no arguments.',parameters:{type:'object',properties:{},required:[],additionalProperties:false}}})),tool_choice:{type:'function',function:{name:expected}},parallel_tool_calls:false},expected);
   messages.push(stepMessages.at(-1));
   const calls=result?.message?.tool_calls;
   if(result?.finish_reason!=='tool_calls'||calls?.length!==1||calls[0].type!=='function'||calls[0].function?.name!==expected||typeof calls[0].id!=='string')throw new GroqInvestigationError(422,'Groq did not request the required evidence. Verified evidence is preserved.');
   let args:any;try{args=JSON.parse(calls[0].function.arguments);}catch{throw new GroqInvestigationError(422,'Groq returned invalid tool arguments');}
-  if(!args||Object.keys(args).length!==1||args.submissionId!==input.submissionId)throw new GroqInvestigationError(403,'Groq tool call is outside the selected case');
-  const evidence=await input.call(expected,args);
+  if(!args||typeof args!=='object'||Array.isArray(args)||Object.keys(args).length!==0)throw new GroqInvestigationError(422,'Groq supplied arguments to a case-bound tool. No evidence was accessed by that call.');
+  const evidence=await input.call(expected,{submissionId:input.submissionId});
   messages.push({role:'assistant',content:null,tool_calls:calls},{role:'tool',tool_call_id:calls[0].id,content:JSON.stringify(evidence)});
  }
  const facts=input.getFacts();
