@@ -47,9 +47,10 @@ test("private API lifecycle, conflict protection and independent disclosure",asy
  await a.dispose();await b.dispose();
 });
 test("browser extracts a PDF, signs a reservation and finances the claim",async({page})=>{
- const w=wallet(3);await page.exposeFunction("testWalletRequest",async({method,params=[]}:{method:string;params:any[]})=>{
+ let failWalletReads=false;const w=wallet(3);await page.exposeFunction("testWalletRequest",async({method,params=[]}:{method:string;params:any[]})=>{
   if(method==="eth_requestAccounts"||method==="eth_accounts")return [w.address];
   if(method==="personal_sign")return w.signMessage(getBytes(params[0]));
+  if(failWalletReads&&['eth_call','eth_getTransactionReceipt'].includes(method))throw Object.assign(Error('Simulated wallet RPC read outage'),{code:'NETWORK_ERROR'});
   return rpc.send(method,params);
  });
  await page.addInitScript(()=>{(window as any).ethereum={request:(req:any)=>(window as any).testWalletRequest(req),on:()=>{},removeListener:()=>{}}});
@@ -62,19 +63,20 @@ test("browser extracts a PDF, signs a reservation and finances the claim",async(
  await page.getByRole("checkbox").check();await page.getByRole("button",{name:"Analyse invoice"}).click();
  await expect(page.getByRole("status")).toContainText("Analysis complete");
  const review=page.getByPlaceholder("Explain why proceeding is appropriate (at least 20 characters).");if(await review.isVisible())await review.fill("Synthetic generated test has a distinct invoice number and approved scope.");
- await page.getByRole("button",{name:"Reserve with wallet"}).click();await expect(page.getByRole("status")).toContainText("Reservation included",{timeout:30000});
+ failWalletReads=true;await page.getByRole("button",{name:"Reserve with wallet"}).click();await expect(page.getByRole("status")).toContainText("Reservation included",{timeout:30000});
  await page.getByRole("button",{name:"Manage claim"}).click();await page.getByRole("button",{name:"Confirm financing",exact:true}).click();await expect(page.getByRole("status")).toContainText("Financing confirmed");
  await page.reload();await expect(page.getByRole('status')).toContainText('workspace restored',{timeout:30000});
  await expect(page.getByRole('heading',{name:'Saved workspace'})).toBeVisible();
  await expect(page.locator('.history-row').filter({hasText:'CONFIRMED'}).first()).toBeVisible();
  await page.locator('.history-row').filter({hasText:'confirmFinancing'}).first().click();
  await expect(page.getByRole('heading',{name:'Read a claim'})).toBeVisible();
+ await page.getByRole('button',{name:/Read from chain/}).click();await expect(page.getByRole('status')).toContainText('loaded from chain');
  await page.evaluate(()=>window.scrollTo(0,0));
  await page.screenshot({path:"docs/results/claim-explorer.png",fullPage:true});
  await page.getByRole("button",{name:"Lender workspace"}).click();await page.evaluate(()=>window.scrollTo(0,0));
  await page.screenshot({path:"docs/results/workspace.png",fullPage:true});
  await page.getByRole("button",{name:/Claim explorer/}).click();
- await page.route('**/api/**',route=>route.abort('failed'));
+ failWalletReads=false;await page.route('**/api/**',route=>route.abort('failed'));
  await page.getByRole("button",{name:"Release financing",exact:true}).click();
  await expect(page.getByRole('status')).toContainText('Financing released',{timeout:30000});
  await page.unroute('**/api/**');await page.reload();

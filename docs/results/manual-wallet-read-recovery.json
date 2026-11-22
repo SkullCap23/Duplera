@@ -1,0 +1,18 @@
+{
+  "recordedAt": "2026-11-22T12:18:52.392Z",
+  "environment": "https://duplera.vercel.app",
+  "fixture": "family-00999-base.pdf",
+  "claimId": "4",
+  "observations": {
+    "walletSignIn": "passed",
+    "analysis": "NO_ACTIVE_CONFLICT",
+    "reservation": "confirmed by MetaMask and independent chain lookup",
+    "claimDisplay": "failed during manual test; fix awaiting hosted retest"
+  },
+  "regression": {
+    "walletReadOutage": "reservation, financing and explicit claim read passed via independent backend",
+    "backendOutage": "direct wallet lifecycle fallback passed",
+    "fullAcceptance": true
+  },
+  "scope": "Read/receipt recovery only; no contract or cloud data migration"
+}
